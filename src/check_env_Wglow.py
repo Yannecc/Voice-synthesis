@@ -60,7 +60,12 @@ if __name__ == '__main__':
     print("Preparing the encoder, the synthesizer and the vocoder...")
     encoder.load_model(args.enc_model_fpath)
     synthesizer = Synthesizer(args.syn_model_dir.joinpath("taco_pretrained"), low_mem=args.low_mem)
-    vocoder.load_model(args.voc_model_fpath)
+    #vocoder.load_model(args.voc_model_fpath)
+    print(synthesizer.sample_rate)
+    waveglow = torch.hub.load('nvidia/DeepLearningExamples:torchhub', 'nvidia_waveglow')
+    waveglow = waveglow.remove_weightnorm(waveglow)
+    waveglow = waveglow.to('cuda')
+    waveglow.eval()
 
 
     ## Run a test
@@ -102,7 +107,7 @@ if __name__ == '__main__':
     # 0.5 seconds which will all be generated together. The parameters here are absurdly short, and 
     # that has a detrimental effect on the quality of the audio. The default parameters are 
     # recommended in general.
-    vocoder.infer_waveform(mel, target=200, overlap=50, progress_callback=no_action)
+    #vocoder.infer_waveform(mel, target=200, overlap=50, progress_callback=no_action)
     
     print("All test passed! You can now synthesize speech.\n\n")
     
@@ -158,14 +163,20 @@ if __name__ == '__main__':
             print("Synthesizing the waveform:")
             # Synthesizing the waveform is fairly straightforward. Remember that the longer the
             # spectrogram, the more time-efficient the vocoder.
-            generated_wav = vocoder.infer_waveform(spec)
+            #generated_wav = vocoder.infer_waveform(spec)
+
+            np.savetxt('mel.csv',spec, delimiter = ',')
+            print('SAVED TO TXT')
+            sequence = torch.from_numpy(spec).to(device='cuda', dtype=torch.float32)
+            sequence = sequence.unsqueeze(0)
+            
+            generated_wav = waveglow.infer(sequence)
             
             
             ## Post-generation
             # There's a bug with sounddevice that makes the audio cut one second earlier, so we
             # pad it.
             generated_wav = np.pad(generated_wav, (0, synthesizer.sample_rate), mode="constant")
-            print("Works n1...\n")
 
             # Play the audio (non-blocking)
             '''if not args.no_sound:
