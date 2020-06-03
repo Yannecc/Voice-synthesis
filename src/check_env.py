@@ -165,8 +165,7 @@ if __name__ == '__main__':
             # There's a bug with sounddevice that makes the audio cut one second earlier, so we
             # pad it.
             generated_wav = np.pad(generated_wav, (0, synthesizer.sample_rate), mode="constant")
-            print("Works n1...\n")
-
+            
             # Play the audio (non-blocking)
             '''if not args.no_sound:
                 sd.stop()

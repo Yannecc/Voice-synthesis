@@ -1,0 +1,5 @@
+#!/bin/bash
+docker build \
+    --tag="voice_synthesis:experimental" \
+    --build-arg UID=$UID \
+    --build-arg GID=1010 .

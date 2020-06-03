@@ -1,3 +1,6 @@
-This is my test sentence. All my speaking models are going to try to say this sentence in the most natural way possible. I wish them good luck!
-
-My goal is to design a model that will be able to imitate this.
+All my speaking models are going to try to say this sentence in the most natural way possible. I wish them good luck!
+# delimiter = '&'
+# I still have to check if putting several sentences is a good idea.
+#
+# Alternatives :
+# My goal is to design a model that will be able to imitate this.
